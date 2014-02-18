@@ -106,6 +106,32 @@ describe('probabilitydrive.js', function() {
 
     });
 
+    describe('routes()', function() {
+        beforeEach(function() {
+            pdInstance.routes([
+                '/product/:id'
+            ]);
+
+            // Start each test from the root page
+            doJourney([
+                '/'
+            ]);
+        });
+
+        it('should combine parameterised URLs', function() {
+            doJourney([
+                '/product/1',
+                '/',
+                '/product/2',
+                '/',
+                '/test',
+                '/',
+            ]);
+
+            assert.deepEqual(pdInstance.determine(), '/product/:id');
+        });
+    });
+
     describe('alias functions', function() {
         describe('here()', function() {
             it('is an alias of observe()', function() {
