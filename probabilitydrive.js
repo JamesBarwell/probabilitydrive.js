@@ -7,10 +7,10 @@
 }(this, function () {
 
     function ProbabilityDrive() {
-        this.store = {};
         this.currentUrl;
-        this.routeUrls = [];
-        this.matchedUrlsMemo = {};
+        this.store           = {};
+        this.routeUrls       = [];
+        this.blacklistUrls   = [];
     }
 
     ProbabilityDrive.prototype.observe = function(url) {
@@ -50,8 +50,15 @@
 
     ProbabilityDrive.prototype.routes = function(routes) {
         routes.forEach(function(route) {
-            route = stripInitialChar(route, '/');
-            this.routeUrls.push(route.split('/'))
+            route = stripAndBreakUrl(route, '/');
+            this.routeUrls.push(route)
+        }.bind(this));
+    }
+
+    ProbabilityDrive.prototype.blacklist = function(routes) {
+        routes.forEach(function(route) {
+            route = stripAndBreakUrl(route, '/');
+            this.blacklistUrls.push(route)
         }.bind(this));
     }
 
@@ -72,7 +79,11 @@
     function incrementUrl(url) {
         var found = false;
 
-        var matchResult = matchRoute.call(this, url);
+        if (matchRoute(url, this.blacklistUrls)) {
+            return;
+        }
+
+        var matchResult = matchRoute(url, this.routeUrls);
         if (matchResult) {
             url = matchResult;
         }
@@ -99,34 +110,37 @@
         });
     }
 
-    function matchRoute(url) {
-        if (this.matchedUrlsMemo[url]) {
-            return this.matchedUrlsMemo[url];
-        }
+    function matchRoute(url, list) {
+        var urlParts = stripAndBreakUrl(url, '/');
 
-        var urlParts = stripInitialChar(url, '/').split('/');
-
-        for (var i = 0; i < this.routeUrls.length; i++) {
-            var routeUrlParts = this.routeUrls[i];
-            for (var j = 0; j <  routeUrlParts.length; j++) {
-                if (!urlParts[j] ||
-                    (routeUrlParts[j] !== urlParts[j] &&
-                    routeUrlParts[j].indexOf(':') === -1)
-                ) {
-                    break;
-                }
-
-                this.matchedUrlsMemo[url] = '/' + routeUrlParts.join('/');
-                return this.matchedUrlsMemo[url];
+        for (var i = 0; i < list.length; i++) {
+            var routeUrlParts = list[i];
+            if (isMatchRouteParts(urlParts, routeUrlParts)) {
+                return '/' + routeUrlParts.join('/');
             }
         }
 
         return false;
     }
 
-    function stripInitialChar(string, character) {
-        return string.charAt(0) !== character
+    function isMatchRouteParts(urlParts, routeUrlParts) {
+        for (var i = 0; i < routeUrlParts.length; i++) {
+            if (!urlParts[i] ||
+                (routeUrlParts[i] !== urlParts[i] &&
+                routeUrlParts[i].indexOf(':') === -1)
+            ) {
+                break;
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    function stripAndBreakUrl(string, character) {
+        string = string.charAt(0) !== character
             ? string : string.substring(1);
+        return string.split('/');
     }
 
     return ProbabilityDrive;

@@ -132,6 +132,56 @@ describe('probabilitydrive.js', function() {
         });
     });
 
+    describe('blacklist()', function() {
+        beforeEach(function() {
+            pdInstance.blacklist([
+                '/about',
+                '/product/:id'
+            ]);
+
+            // Start each test from the root page
+            doJourney([
+                '/'
+            ]);
+        });
+
+        it('should not count results for blacklisted pages', function() {
+            doJourney([
+                '/about',
+                '/',
+                '/about',
+                '/',
+                '/page1',
+                '/'
+            ]);
+
+            assert.deepEqual(pdInstance.determine(), '/page1');
+        });
+
+        it('should still record results from a blacklisted page to a leaf page', function() {
+            doJourney([
+                '/about',
+                '/page1',
+                '/about',
+            ]);
+
+            assert.deepEqual(pdInstance.determine(), '/page1');
+        });
+
+        it('should blacklist parameterised pages', function() {
+            doJourney([
+                '/product/1',
+                '/',
+                '/product/2',
+                '/',
+                '/page1',
+                '/',
+            ]);
+
+            assert.deepEqual(pdInstance.determine(), '/page1');
+        });
+    });
+
     describe('alias functions', function() {
         describe('here()', function() {
             it('is an alias of observe()', function() {
