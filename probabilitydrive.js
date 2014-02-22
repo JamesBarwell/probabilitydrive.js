@@ -19,10 +19,7 @@
             return this;
         }
 
-        this.store[this.currentUrl] = this.store[this.currentUrl] || [];
-
         incrementUrl.call(this, url);
-
         this.currentUrl = url;
 
         return this;
@@ -49,17 +46,19 @@
     }
 
     ProbabilityDrive.prototype.routes = function(routes) {
-        routes.forEach(function(route) {
-            route = stripAndBreakUrl(route, '/');
-            this.routeUrls.push(route)
-        }.bind(this));
+        for (var i = 0; i < routes.length; i++) {
+            this.routeUrls.push(
+                stripAndBreakUrl(routes[i], '/')
+            )
+        }
     }
 
     ProbabilityDrive.prototype.blacklist = function(routes) {
-        routes.forEach(function(route) {
-            route = stripAndBreakUrl(route, '/');
-            this.blacklistUrls.push(route)
-        }.bind(this));
+        for (var i = 0; i < routes.length; i++) {
+            this.blacklistUrls.push(
+                stripAndBreakUrl(routes[i], '/')
+            )
+        }
     }
 
     ProbabilityDrive.prototype.getData = function() {
@@ -77,17 +76,20 @@
         ProbabilityDrive.prototype.determine
 
     function incrementUrl(url) {
-        var found = false;
-
         if (matchRoute(url, this.blacklistUrls)) {
+            // Route is blacklisted
             return;
         }
 
         var matchResult = matchRoute(url, this.routeUrls);
         if (matchResult) {
+            // Use parameterised route
             url = matchResult;
         }
 
+        this.store[this.currentUrl] = this.store[this.currentUrl] || [];
+
+        var found = false;
         for (var i in this.store[this.currentUrl]) {
             if (this.store[this.currentUrl][i].url === url) {
                 found = true;
