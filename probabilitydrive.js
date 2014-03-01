@@ -41,11 +41,7 @@
                 break;
             }
         }
-
-        if (result.length === 0) {
-            return null;
-        }
-        return result.length === 1 && result[0] || result;
+        return result;
     }
 
     ProbabilityDrive.prototype.routes = function(routes) {

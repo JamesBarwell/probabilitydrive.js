@@ -26,7 +26,7 @@ describe('probabilitydrive.js', function() {
             ]);
 
             var result = pdInstance.determine();
-            assert.equal(result, null);
+            assert.equal(result.length, 0);
         });
         it('should chain with other module functions', function() {
             assert.equal(typeof pdInstance.observe('/').determine, 'function');
@@ -48,7 +48,8 @@ describe('probabilitydrive.js', function() {
                 '/'
             ]);
             var result = pdInstance.determine();
-            assert.deepEqual(result.url, '/page1');
+            assert.equal(result.length, 1);
+            assert.equal(result[0].url, '/page1');
         });
         it('should predict multiple paths when count weightings are equal', function() {
             doJourney([
@@ -59,7 +60,7 @@ describe('probabilitydrive.js', function() {
                 '/'
             ]);
             var result = pdInstance.determine()
-            assert.ok(Array.isArray(result));
+            assert.equal(result.length, 2);
             assert.equal(result[0].url, '/page1');
             assert.equal(result[1].url, '/page2');
         });
@@ -75,7 +76,8 @@ describe('probabilitydrive.js', function() {
                 '/'
             ]);
             var result = pdInstance.determine();
-            assert.equal(result.url, '/page2');
+            assert.equal(result.length, 1);
+            assert.equal(result[0].url, '/page2');
         });
 
         describe('the probability calculation', function() {
@@ -94,7 +96,8 @@ describe('probabilitydrive.js', function() {
 
             it('should give the probability based on the known total', function() {
                 var result = pdInstance.determine();
-                assert.deepEqual(roundTo2DecimalPlaces(result.probability), 0.67);
+                assert.equal(result.length, 1);
+                assert.equal(roundTo2DecimalPlaces(result[0].probability), 0.67);
             });
         });
 
@@ -121,8 +124,9 @@ describe('probabilitydrive.js', function() {
                 '/test',
                 '/',
             ]);
-            var result =pdInstance.determine();
-            assert.equal(result.url, '/product/:id');
+            var result = pdInstance.determine();
+            assert.equal(result.length, 1);
+            assert.equal(result[0].url, '/product/:id');
         });
     });
 
@@ -148,8 +152,9 @@ describe('probabilitydrive.js', function() {
                 '/page1',
                 '/'
             ]);
-            var result =pdInstance.determine();
-            assert.equal(result.url, '/page1');
+            var result = pdInstance.determine();
+            assert.equal(result.length, 1);
+            assert.equal(result[0].url, '/page1');
         });
 
         it('should still record results from a blacklisted page to a leaf page', function() {
@@ -158,8 +163,9 @@ describe('probabilitydrive.js', function() {
                 '/page1',
                 '/about',
             ]);
-            var result =pdInstance.determine();
-            assert.equal(result.url, '/page1');
+            var result = pdInstance.determine();
+            assert.equal(result.length, 1);
+            assert.equal(result[0].url, '/page1');
         });
 
         it('should blacklist parameterised pages', function() {
@@ -171,8 +177,9 @@ describe('probabilitydrive.js', function() {
                 '/page1',
                 '/',
             ]);
-            var result =pdInstance.determine();
-            assert.equal(result.url, '/page1');
+            var result = pdInstance.determine();
+            assert.equal(result.length, 1);
+            assert.equal(result[0].url, '/page1');
         });
     });
 
