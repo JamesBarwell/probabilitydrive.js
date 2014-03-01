@@ -35,13 +35,16 @@
 
         for (var i in this.store[url]) {
             if (minCount <= this.store[url][i].count) {
-                result.push(this.store[url][i].url);
+                result.push(this.store[url][i]);
                 minCount = this.store[url][i].count
             } else {
                 break;
             }
         }
 
+        if (result.length === 0) {
+            return null;
+        }
         return result.length === 1 && result[0] || result;
     }
 
@@ -101,12 +104,25 @@
         if (!found) {
             this.store[this.currentUrl].push({
                 url:   url,
-                count: 1
+                count: 1,
+                probability: 0
             });
         }
     }
 
     function analyse(url) {
+        if (!this.store[url]) {
+            return;
+        }
+
+        var total = this.store[url].reduce(function(total, urlData) {
+            return total += urlData.count;
+        }, 0);
+
+        this.store[url].forEach(function(urlData) {
+            urlData.probability = urlData.count / total;
+        });
+
         this.store[url].sort(function(a, b) {
             return a.count < b.count;
         });

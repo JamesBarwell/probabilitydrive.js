@@ -11,7 +11,6 @@ describe('probabilitydrive.js', function() {
     });
 
     describe('observe()', function() {
-
         beforeEach(function() {
             // Start each test from the root page
             doJourney([
@@ -19,44 +18,15 @@ describe('probabilitydrive.js', function() {
             ]);
         });
 
-        it('should add a newly observed URL', function() {
-            doJourney([
-                '/test',
-            ]);
-            var data = pdInstance.getData();
-
-            assert('/' in data);
-
-            var rootData = data['/'];
-
-            assert.equal(rootData.length, 1);
-            assert.equal(rootData[0].url, '/test');
-            assert.equal(rootData[0].count, 1);
-        });
-        it('should increment the count of already observed URLs', function() {
-            doJourney([
-                '/test',
-                '/',
-                '/test'
-            ]);
-            var data = pdInstance.getData();
-
-            assert('/' in data);
-
-            var rootData = data['/'];
-
-            assert.equal(rootData.length, 1);
-            assert.equal(rootData[0].url, '/test');
-            assert.equal(rootData[0].count, 2);
-        });
         it('should ignore repeat calls with the same data', function() {
             doJourney([
                 '/',
-                '/'
+                '/',
+                '/',
             ]);
 
-            var data = pdInstance.getData();
-            assert(!('/' in data));
+            var result = pdInstance.determine();
+            assert.equal(result, null);
         });
         it('should chain with other module functions', function() {
             assert.equal(typeof pdInstance.observe('/').determine, 'function');
@@ -65,7 +35,6 @@ describe('probabilitydrive.js', function() {
     });
 
     describe('determine()', function() {
-
         beforeEach(function() {
             // Start each test from the root page
             doJourney([
@@ -78,7 +47,8 @@ describe('probabilitydrive.js', function() {
                 '/page1',
                 '/'
             ]);
-            assert.deepEqual(pdInstance.determine(), '/page1');
+            var result = pdInstance.determine();
+            assert.deepEqual(result.url, '/page1');
         });
         it('should predict multiple paths when count weightings are equal', function() {
             doJourney([
@@ -88,7 +58,10 @@ describe('probabilitydrive.js', function() {
                 '/page3',
                 '/'
             ]);
-            assert.deepEqual(pdInstance.determine(), ['/page1', '/page2']);
+            var result = pdInstance.determine()
+            assert.ok(Array.isArray(result));
+            assert.equal(result[0].url, '/page1');
+            assert.equal(result[1].url, '/page2');
         });
         it('should prioritise paths that have a higher count weighting', function() {
             doJourney([
@@ -101,7 +74,28 @@ describe('probabilitydrive.js', function() {
                 '/page3',
                 '/'
             ]);
-            assert.deepEqual(pdInstance.determine(), '/page2');
+            var result = pdInstance.determine();
+            assert.equal(result.url, '/page2');
+        });
+
+        describe('the probability calculation', function() {
+            beforeEach(function() {
+                // Start each test from the root page
+                doJourney([
+                    '/',
+                    '/page1',
+                    '/',
+                    '/page2',
+                    '/',
+                    '/page1',
+                    '/'
+                ]);
+            });
+
+            it('should give the probability based on the known total', function() {
+                var result = pdInstance.determine();
+                assert.deepEqual(roundTo2DecimalPlaces(result.probability), 0.67);
+            });
         });
 
     });
@@ -127,8 +121,8 @@ describe('probabilitydrive.js', function() {
                 '/test',
                 '/',
             ]);
-
-            assert.deepEqual(pdInstance.determine(), '/product/:id');
+            var result =pdInstance.determine();
+            assert.equal(result.url, '/product/:id');
         });
     });
 
@@ -154,8 +148,8 @@ describe('probabilitydrive.js', function() {
                 '/page1',
                 '/'
             ]);
-
-            assert.deepEqual(pdInstance.determine(), '/page1');
+            var result =pdInstance.determine();
+            assert.equal(result.url, '/page1');
         });
 
         it('should still record results from a blacklisted page to a leaf page', function() {
@@ -164,8 +158,8 @@ describe('probabilitydrive.js', function() {
                 '/page1',
                 '/about',
             ]);
-
-            assert.deepEqual(pdInstance.determine(), '/page1');
+            var result =pdInstance.determine();
+            assert.equal(result.url, '/page1');
         });
 
         it('should blacklist parameterised pages', function() {
@@ -177,8 +171,8 @@ describe('probabilitydrive.js', function() {
                 '/page1',
                 '/',
             ]);
-
-            assert.deepEqual(pdInstance.determine(), '/page1');
+            var result =pdInstance.determine();
+            assert.equal(result.url, '/page1');
         });
     });
 
@@ -201,4 +195,7 @@ describe('probabilitydrive.js', function() {
         });
     }
 
+    function roundTo2DecimalPlaces(number) {
+        return Math.round(number * 100) / 100;
+    }
 });
