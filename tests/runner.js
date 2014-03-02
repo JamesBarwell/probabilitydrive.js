@@ -103,6 +103,56 @@ describe('probabilitydrive.js', function() {
 
     });
 
+    describe('percentile()', function() {
+        beforeEach(function() {
+            // Start each test from the root page
+            doJourney([
+                '/',
+                // 5 visits to /a
+                '/a',
+                '/',
+                '/a',
+                '/',
+                '/a',
+                '/',
+                '/a',
+                '/',
+                '/a',
+                '/',
+                // 4 visits to /b
+                '/b',
+                '/',
+                '/b',
+                '/',
+                '/b',
+                '/',
+                '/b',
+                '/',
+                // 1 visit to /c
+                '/c',
+                '/',
+            ]);
+        });
+
+        it('should return the 100th percentile of results', function() {
+            var result = pdInstance.percentile(100);
+            assert.equal(result.length, 1);
+            assert.equal(result[0].url, '/a');
+        });
+        it('should return the 80th percentile of results', function() {
+            var result = pdInstance.percentile(80);
+            assert.equal(result.length, 2);
+            assert.equal(result[0].url, '/a');
+            assert.equal(result[1].url, '/b');
+        });
+        it('should return the 25th percentile of results', function() {
+            var result = pdInstance.percentile(25);
+            assert.equal(result.length, 2);
+            assert.equal(result[0].url, '/a');
+            assert.equal(result[1].url, '/b');
+        });
+    });
+
     describe('routes()', function() {
         beforeEach(function() {
             pdInstance.routes([

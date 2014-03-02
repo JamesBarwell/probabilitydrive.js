@@ -20,6 +20,8 @@
         }
 
         incrementUrl.call(this, url);
+        analyse.call(this, this.currentUrl);
+
         this.currentUrl = url;
 
         return this;
@@ -27,8 +29,6 @@
 
     ProbabilityDrive.prototype.determine = function(url) {
         url = url || this.currentUrl;
-
-        analyse.call(this, url);
 
         var minCount = 0;
         var result = [];
@@ -42,6 +42,26 @@
             }
         }
         return result;
+    }
+
+    ProbabilityDrive.prototype.percentile = function(percentile) {
+        percentile = percentile / 100;
+
+        var data = this.store[this.currentUrl];
+        var first = data.splice(0, 1)[0];
+        var multiplier = 1 / first.probability;
+
+        var results = [first];
+
+        for (var i in data) {
+            var urlData = data[i];
+            if (urlData.probability * multiplier >= percentile) {
+                results.push(urlData);
+            } else {
+                break;
+            }
+        }
+        return results;
     }
 
     ProbabilityDrive.prototype.routes = function(routes) {
