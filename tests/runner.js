@@ -153,6 +153,56 @@ describe('probabilitydrive.js', function() {
         });
     });
 
+    describe('threshold()', function() {
+        beforeEach(function() {
+            // Start each test from the root page
+            doJourney([
+                '/',
+                // 5 visits to /a
+                '/a',
+                '/',
+                '/a',
+                '/',
+                '/a',
+                '/',
+                '/a',
+                '/',
+                '/a',
+                '/',
+                // 4 visits to /b
+                '/b',
+                '/',
+                '/b',
+                '/',
+                '/b',
+                '/',
+                '/b',
+                '/',
+                // 1 visit to /c
+                '/c',
+                '/',
+            ]);
+        });
+
+        describe('should return results over the probability threshold', function() {
+            it('0.8', function() {
+                var result = pdInstance.threshold(0.8)
+                assert.equal(result.length, 0);
+            });
+            it('0.5', function() {
+                var result = pdInstance.threshold(0.5)
+                assert.equal(result.length, 1);
+                assert.equal(result[0].url, '/a');
+            });
+            it('0.3', function() {
+                var result = pdInstance.threshold(0.3)
+                assert.equal(result.length, 2);
+                assert.equal(result[0].url, '/a');
+                assert.equal(result[1].url, '/b');
+            });
+        });
+    });
+
     describe('routes()', function() {
         beforeEach(function() {
             pdInstance.routes([

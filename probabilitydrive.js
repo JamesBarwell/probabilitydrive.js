@@ -64,6 +64,21 @@
         return results;
     }
 
+    ProbabilityDrive.prototype.threshold = function(probability) {
+        var data = this.store[this.currentUrl];
+        var result = [];
+
+        for (var i in data) {
+            var urlData = data[i];
+            if (urlData.probability >= probability) {
+                result.push(urlData);
+            } else {
+                break;
+            }
+        }
+        return result;
+    }
+
     ProbabilityDrive.prototype.routes = function(routes) {
         for (var i = 0; i < routes.length; i++) {
             this.routeUrls.push(
