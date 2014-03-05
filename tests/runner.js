@@ -1,6 +1,6 @@
 var assert = require('assert'),
     mocha  = require('mocha'),
-    pd     = require('../probabilitydrive').probabilitydrive;
+    pd     = require('../src/probabilitydrive').probabilitydrive;
 
 describe('probabilitydrive.js', function() {
 
