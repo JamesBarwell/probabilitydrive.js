@@ -1,14 +1,22 @@
 {
-    "name": "probabilitydrive.js",
-    "author": "James Barwell <jb@jamesbarwell.co.uk>",
-    "description": "Determines where a user is going to navigate to next on a website",
-    "version": "0.1.0",
-    "main": "probabilitydrive.js",
-    "keywords:": ["probability", "drive", "deterministic", "predict", "navigate", "preload", "prefetch"],
-    "devDependencies": {
-        "mocha": "1.8.1"
-    },
-    "scripts": {
-      "test": "node_modules/mocha/bin/mocha tests/runner.js"
-    }
+  "name": "probabilitydrive.js",
+  "author": "James Barwell <jb@jamesbarwell.co.uk>",
+  "description": "Determines where a user is going to navigate to next on a website",
+  "version": "0.1.0",
+  "main": "probabilitydrive.js",
+  "keywords:": [
+    "probability",
+    "drive",
+    "deterministic",
+    "predict",
+    "navigate",
+    "preload",
+    "prefetch"
+  ],
+  "devDependencies": {
+    "mocha": "~1.17.1"
+  },
+  "scripts": {
+    "test": "node_modules/mocha/bin/mocha tests/runner.js"
+  }
 }
