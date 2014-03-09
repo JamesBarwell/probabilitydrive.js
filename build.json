@@ -1,0 +1,23 @@
+{
+  "JAVASCRIPT": {
+    "DIST_DIR": "./",
+    "probabilitydrive": [
+      "src/copyright.js",
+      "src/probabilitydrive.js"
+    ]
+  }
+, "JSHINT_OPTS": {
+      "predef": [ "define", "module" ]
+    , "bitwise": true
+    , "trailing": true
+    , "latedef": "nofunc"
+    , "curly": true
+    , "undef": true
+    , "indent": 4
+    , "trailing": true
+    , "eqnull": true
+    , "browser": true
+    , "es3": true
+    , "asi": true
+  }
+}

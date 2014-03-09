@@ -187,8 +187,7 @@
     }
 
     function stripAndBreakUrl(string, character) {
-        string = string.charAt(0) !== character
-            ? string : string.substring(1);
+        string = string.charAt(0) !== character ? string : string.substring(1);
         return string.split('/');
     }
 

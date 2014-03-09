@@ -14,7 +14,8 @@
     "prefetch"
   ],
   "devDependencies": {
-    "mocha": "~1.17.1"
+    "mocha": "~1.17.1",
+    "smoosh": "~0.4.1"
   },
   "scripts": {
     "test": "node_modules/mocha/bin/mocha tests/runner.js"
