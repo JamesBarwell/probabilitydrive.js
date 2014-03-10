@@ -7,14 +7,17 @@ Visitors to a website will often make repeated journeys through the same set of 
 
 This library will help to analyse which URLs have been visited previously and to make probabilistic predictions based on that knowledge. The accuracy of these predictions will depend upon the website in question, and the free will exhibited by its users!
 
-## Examples
+## Analysis examples
 ```js
+// Create a new instance
+var probabilitydrive = new ProbabilityDrive();
+
 // Hook it into your site
 window.onload = function() {
     probabilitydrive.observe(window.location.href);
 }
 
-// or using jQuery
+// or hook it in using jQuery
 $(function() {
     probabilitydrive.observe(window.location.href);
 });
@@ -27,7 +30,11 @@ probabilitydrive.percentile(75); // returns ['/products', '/specials']
 
 // Get the most probable next pages over a given probability threshold
 probabilitydrive.threshold(0.3); // returns ['/products', '/specials', '/help']
+```
 
+## Setup examples
+
+```js
 // Tell probabilitydrive about your website's URL structure
 probabilitydrive.routes([
     '/products/:id',
@@ -39,6 +46,16 @@ probabilitydrive.blacklist([
     '/users/:id',
     '/404'
 ]);
+```
+
+## Util Examples
+
+```js
+// Get the current analysis data
+var data = probabilitydrive.getData();
+
+// Set previously retrieved data
+probabilitydrive.setData(data);
 ```
 
 ## Credits
