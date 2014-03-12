@@ -96,11 +96,16 @@
     }
 
     ProbabilityDrive.prototype.getData = function() {
-        return this.store;
+        return {
+            currentUrl: this.currentUrl,
+            store: this.store
+        };
     }
 
     ProbabilityDrive.prototype.setData = function(data) {
-        this.store = data;
+        data = data || {};
+        this.currentUrl = data.currentUrl;
+        this.store = data.store || {};
     }
 
     // Aliases
