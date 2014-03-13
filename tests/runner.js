@@ -101,6 +101,41 @@ describe('probabilitydrive.js', function() {
             });
         });
 
+        describe('with countThreshold() at 3', function() {
+            beforeEach(function() {
+                pdInstance.setCountThreshold(3);
+            });
+
+            it('should ignore URL data that has not been observed 3 times', function() {
+                doJourney([
+                    '/page1',
+                    '/',
+                    '/page1',
+                    '/'
+                ]);
+                var result = pdInstance.determine();
+                assert.equal(result.length, 0);
+            });
+
+            it('should still predict URLs that have met the count threshold', function() {
+                doJourney([
+                    '/page1',
+                    '/',
+                    '/page1',
+                    '/',
+                    '/page2',
+                    '/',
+                    '/page2',
+                    '/',
+                    '/page2',
+                    '/'
+                ]);
+                var result = pdInstance.determine();
+                assert.equal(result.length, 1);
+                assert.equal(result[0].url, '/page2');
+            });
+        });
+
     });
 
     describe('percentile()', function() {
