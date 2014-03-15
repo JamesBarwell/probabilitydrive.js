@@ -186,6 +186,18 @@ describe('probabilitydrive.js', function() {
             assert.equal(result[0].url, '/a');
             assert.equal(result[1].url, '/b');
         });
+
+        describe('with countThreshold() at 5', function() {
+            beforeEach(function() {
+                pdInstance.setCountThreshold(5);
+            });
+
+            it('should ignore URL data that has not been observed 5 times', function() {
+                var result = pdInstance.percentile(80);
+                assert.equal(result.length, 1);
+                assert.equal(result[0].url, '/a');
+            });
+        });
     });
 
     describe('threshold()', function() {
@@ -234,6 +246,18 @@ describe('probabilitydrive.js', function() {
                 assert.equal(result.length, 2);
                 assert.equal(result[0].url, '/a');
                 assert.equal(result[1].url, '/b');
+            });
+        });
+
+        describe('with countThreshold() at 5', function() {
+            beforeEach(function() {
+                pdInstance.setCountThreshold(5);
+            });
+
+            it('should ignore URL data that has not been observed 5 times', function() {
+                var result = pdInstance.threshold(0.3)
+                assert.equal(result.length, 1);
+                assert.equal(result[0].url, '/a');
             });
         });
     });
