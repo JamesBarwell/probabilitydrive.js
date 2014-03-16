@@ -11,6 +11,7 @@
         this.store           = {};
         this.routeUrls       = [];
         this.blacklistUrls   = [];
+        this.countThreshold  = 0;
     }
 
     ProbabilityDrive.prototype.observe = function(url) {
@@ -34,9 +35,14 @@
         var result = [];
 
         for (var i in this.store[url]) {
-            if (minCount <= this.store[url][i].count) {
-                result.push(this.store[url][i]);
-                minCount = this.store[url][i].count
+            var urlData = this.store[url][i];
+            if (urlData.count < this.countThreshold) {
+                continue;
+            }
+
+            if (minCount <= urlData.count) {
+                result.push(urlData);
+                minCount = urlData.count
             } else {
                 break;
             }
@@ -77,6 +83,10 @@
             }
         }
         return result;
+    }
+
+    ProbabilityDrive.prototype.setCountThreshold = function(threshold) {
+        this.countThreshold = threshold;
     }
 
     ProbabilityDrive.prototype.routes = function(routes) {
