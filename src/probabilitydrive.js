@@ -74,7 +74,7 @@
         return results;
     }
 
-    ProbabilityDrive.prototype.threshold = function(probability) {
+    ProbabilityDrive.prototype.probability = function(probability) {
         var data = this.store[this.currentUrl];
         var result = [];
 
