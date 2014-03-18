@@ -61,6 +61,10 @@
 
         for (var i in data) {
             var urlData = data[i];
+            if (urlData.count < this.countThreshold) {
+                continue;
+            }
+
             if (urlData.probability * multiplier >= percentile) {
                 results.push(urlData);
             } else {
@@ -76,6 +80,10 @@
 
         for (var i in data) {
             var urlData = data[i];
+            if (urlData.count < this.countThreshold) {
+                continue;
+            }
+
             if (urlData.probability >= probability) {
                 result.push(urlData);
             } else {
