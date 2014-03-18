@@ -8,10 +8,16 @@
     "probability",
     "drive",
     "deterministic",
+    "determine",
     "predict",
     "navigate",
     "preload",
-    "prefetch"
+    "prefetch",
+    "url",
+    "navigate",
+    "user",
+    "navigation",
+    "interaction"
   ],
   "devDependencies": {
     "mocha": "~1.17.1",
