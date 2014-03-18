@@ -22,33 +22,56 @@ $(function() {
     probabilitydrive.observe(window.location.href);
 });
 
-// Get the most probable next page(s)
-probabilitydrive.determine(); // returns ['/products']
+// Predict the most likely next URL(s)
+probabilitydrive.determine();
+[
+    { url:'/products', count: 6, probability: 0.46153846153846156 }
+]
 
-// Get the most probable next pages within a given percentile
-probabilitydrive.percentile(75); // returns ['/products', '/specials']
+// Predict the next URL(s) greater than equal to a given probability threshold
+probabilitydrive.probability(0.4);
+[
+    { url:'/products', count: 6, probability: 0.46153846153846156 }
+]
 
-// Get the most probable next pages over a given probability threshold
-probabilitydrive.threshold(0.3); // returns ['/products', '/specials', '/help']
+// Predict the next URL(s) that, in the range of URL probabilities, have a probability in the given percentile or above
+probabilitydrive.percentile(40);
+[
+    { url:'/products', count: 6, probability: 0.46153846153846156 },
+    { url:'/events', count: 5, probability: 0.38461538461538464 }
+]
 ```
 
 ## Setup examples
 
 ```js
-// Tell probabilitydrive about your website's URL structure
+// Inform it about your website's URL structure using :foo to parameterise them, so that observations along these routes are bundled together
 probabilitydrive.routes([
     '/products/:id',
     '/products/:id/info'
 ]);
 
-// Blacklist URLs you want to ignore
+// These will now all increase the probability count for '/products/:id'
+probabilitydrive.observe('/products/1');
+probabilitydrive.observe('/products/2');
+probabilitydrive.observe('/products/3');
+
+// and these will both increase the probability count for '/products/:id/info'
+probabilitydrive.observe('/products/1/info');
+probabilitydrive.observe('/products/2/info');
+
+probabilitydrive.determine();
+[ { url:'/products/:id', count: 42, probability: 0.5 } ]
+
+
+// Blacklist URLs you want to ignore entirely
 probabilitydrive.blacklist([
     '/users/:id',
     '/404'
 ]);
 ```
 
-## Util Examples
+## Utility Examples
 
 ```js
 // Get the current analysis data
@@ -56,6 +79,9 @@ var data = probabilitydrive.getData();
 
 // Set previously retrieved data
 probabilitydrive.setData(data);
+
+// You can chain calls from observe()
+probabilitydrive.observe('/example').determine();
 ```
 
 ## Credits
