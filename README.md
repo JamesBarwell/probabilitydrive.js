@@ -7,6 +7,8 @@ Visitors to a website will often make repeated journeys through the same set of 
 
 This library will help to analyse which URLs have been visited previously and to make probabilistic predictions based on that knowledge. The accuracy of these predictions will depend upon the website in question, and the free will exhibited by its users!
 
+Please note that this library leaves open the choice of how data will be persisted, and therefore offers no default implementation. The examples given below are not sufficient to track a user's journey on their own, as data is only stored in memory and will be lost when the user navigates to another page. See the included example code for a simple way to persist data using the Web Storage API.
+
 ## Analysis examples
 ```js
 // Create a new instance
@@ -69,6 +71,9 @@ probabilitydrive.blacklist([
     '/users/:id',
     '/404'
 ]);
+
+// Ignore URLs when making predictions until they have been observed at least a specified number of times
+probabilitydrive.setCountThreshold(10);
 ```
 
 ## Utility Examples
