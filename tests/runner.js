@@ -49,7 +49,7 @@ describe('probabilitydrive.js', function() {
             ]);
             var result = pdInstance.determine();
             assert.equal(result.length, 1);
-            assert.equal(result[0].url, '/page1');
+            assert.equal(result[0], '/page1');
         });
         it('should predict multiple paths when count weightings are equal', function() {
             doJourney([
@@ -61,8 +61,8 @@ describe('probabilitydrive.js', function() {
             ]);
             var result = pdInstance.determine()
             assert.equal(result.length, 2);
-            assert.equal(result[0].url, '/page1');
-            assert.equal(result[1].url, '/page2');
+            assert.equal(result[0], '/page1');
+            assert.equal(result[1], '/page2');
         });
         it('should prioritise paths that have a higher count weighting', function() {
             doJourney([
@@ -77,28 +77,7 @@ describe('probabilitydrive.js', function() {
             ]);
             var result = pdInstance.determine();
             assert.equal(result.length, 1);
-            assert.equal(result[0].url, '/page2');
-        });
-
-        describe('the probability calculation', function() {
-            beforeEach(function() {
-                // Start each test from the root page
-                doJourney([
-                    '/',
-                    '/page1',
-                    '/',
-                    '/page2',
-                    '/',
-                    '/page1',
-                    '/'
-                ]);
-            });
-
-            it('should give the probability based on the known total', function() {
-                var result = pdInstance.determine();
-                assert.equal(result.length, 1);
-                assert.equal(roundTo2DecimalPlaces(result[0].probability), 0.67);
-            });
+            assert.equal(result[0], '/page2');
         });
 
         describe('with countThreshold() at 3', function() {
@@ -132,7 +111,7 @@ describe('probabilitydrive.js', function() {
                 ]);
                 var result = pdInstance.determine();
                 assert.equal(result.length, 1);
-                assert.equal(result[0].url, '/page2');
+                assert.equal(result[0], '/page2');
             });
         });
 
@@ -172,19 +151,19 @@ describe('probabilitydrive.js', function() {
         it('should return the 100th percentile of results', function() {
             var result = pdInstance.percentile(100);
             assert.equal(result.length, 1);
-            assert.equal(result[0].url, '/a');
+            assert.equal(result[0], '/a');
         });
         it('should return the 80th percentile of results', function() {
             var result = pdInstance.percentile(80);
             assert.equal(result.length, 2);
-            assert.equal(result[0].url, '/a');
-            assert.equal(result[1].url, '/b');
+            assert.equal(result[0], '/a');
+            assert.equal(result[1], '/b');
         });
         it('should return the 25th percentile of results', function() {
             var result = pdInstance.percentile(25);
             assert.equal(result.length, 2);
-            assert.equal(result[0].url, '/a');
-            assert.equal(result[1].url, '/b');
+            assert.equal(result[0], '/a');
+            assert.equal(result[1], '/b');
         });
 
         describe('with countThreshold() at 5', function() {
@@ -195,7 +174,7 @@ describe('probabilitydrive.js', function() {
             it('should ignore URL data that has not been observed 5 times', function() {
                 var result = pdInstance.percentile(80);
                 assert.equal(result.length, 1);
-                assert.equal(result[0].url, '/a');
+                assert.equal(result[0], '/a');
             });
         });
     });
@@ -239,13 +218,13 @@ describe('probabilitydrive.js', function() {
             it('0.5', function() {
                 var result = pdInstance.probability(0.5)
                 assert.equal(result.length, 1);
-                assert.equal(result[0].url, '/a');
+                assert.equal(result[0], '/a');
             });
-            it('0.3', function() {
-                var result = pdInstance.probability(0.3)
+            it('0.4', function() {
+                var result = pdInstance.probability(0.4)
                 assert.equal(result.length, 2);
-                assert.equal(result[0].url, '/a');
-                assert.equal(result[1].url, '/b');
+                assert.equal(result[0], '/a');
+                assert.equal(result[1], '/b');
             });
         });
 
@@ -257,7 +236,7 @@ describe('probabilitydrive.js', function() {
             it('should ignore URL data that has not been observed 5 times', function() {
                 var result = pdInstance.probability(0.3)
                 assert.equal(result.length, 1);
-                assert.equal(result[0].url, '/a');
+                assert.equal(result[0], '/a');
             });
         });
     });
@@ -285,7 +264,7 @@ describe('probabilitydrive.js', function() {
             ]);
             var result = pdInstance.determine();
             assert.equal(result.length, 1);
-            assert.equal(result[0].url, '/product/:id');
+            assert.equal(result[0], '/product/:id');
         });
     });
 
@@ -313,7 +292,7 @@ describe('probabilitydrive.js', function() {
             ]);
             var result = pdInstance.determine();
             assert.equal(result.length, 1);
-            assert.equal(result[0].url, '/page1');
+            assert.equal(result[0], '/page1');
         });
 
         it('should still record results from a blacklisted page to a leaf page', function() {
@@ -324,7 +303,7 @@ describe('probabilitydrive.js', function() {
             ]);
             var result = pdInstance.determine();
             assert.equal(result.length, 1);
-            assert.equal(result[0].url, '/page1');
+            assert.equal(result[0], '/page1');
         });
 
         it('should blacklist parameterised pages', function() {
@@ -338,7 +317,7 @@ describe('probabilitydrive.js', function() {
             ]);
             var result = pdInstance.determine();
             assert.equal(result.length, 1);
-            assert.equal(result[0].url, '/page1');
+            assert.equal(result[0], '/page1');
         });
     });
 

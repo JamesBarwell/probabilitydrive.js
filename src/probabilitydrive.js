@@ -41,7 +41,7 @@
             }
 
             if (minCount <= urlData.count) {
-                result.push(urlData);
+                result.push(urlData.url);
                 minCount = urlData.count
             } else {
                 break;
@@ -57,7 +57,7 @@
         var first = data.splice(0, 1)[0];
         var multiplier = 1 / first.probability;
 
-        var results = [first];
+        var results = [first.url];
 
         for (var i in data) {
             var urlData = data[i];
@@ -66,7 +66,7 @@
             }
 
             if (urlData.probability * multiplier >= percentile) {
-                results.push(urlData);
+                results.push(urlData.url);
             } else {
                 break;
             }
@@ -85,7 +85,7 @@
             }
 
             if (urlData.probability >= probability) {
-                result.push(urlData);
+                result.push(urlData.url);
             } else {
                 break;
             }
