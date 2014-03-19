@@ -28,8 +28,8 @@
         return this;
     }
 
-    ProbabilityDrive.prototype.determine = function(url) {
-        url = url || this.currentUrl;
+    ProbabilityDrive.prototype.determine = function() {
+        url = this.currentUrl;
 
         var minCount = 0;
         var result = [];
