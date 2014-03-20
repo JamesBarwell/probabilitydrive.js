@@ -18,13 +18,15 @@ describe('probabilitydrive.js', function() {
             ]);
         });
 
+        it('should return [] when it has no data', function() {
+            var result = pdInstance.determine();
+            assert.equal(result.length, 0);
+        });
         it('should ignore repeat calls with the same data', function() {
             doJourney([
                 '/',
                 '/',
-                '/',
             ]);
-
             var result = pdInstance.determine();
             assert.equal(result.length, 0);
         });
