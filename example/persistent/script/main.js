@@ -8,6 +8,9 @@
     var probabilitydrive = new window.probabilitydrive;
     var cache = window.localStorage;
 
+    // Make it available globally just for playing around with in this example
+    window.pdInstance = probabilitydrive;
+
     // Retrieve and set the historical data from the data store
     var previousData;
     try {
@@ -31,19 +34,7 @@
 
     // Make a prediction
     var prediction = probabilitydrive.determine();
-    var info = getInfoFromPrediction(prediction);
-    log('prediction', info);
-
-    function getInfoFromPrediction(prediction) {
-        var predictionsText = [];
-        Object.keys(prediction).forEach(function(key) {
-            var urlData = prediction[key];
-            predictionsText.push(
-                urlData.url + ' - probability: ' + urlData.probability
-            );
-        });
-        return predictionsText;
-    }
+    log('prediction', prediction.join(', '));
 
     function log(method, data) {
         console.log('probabilitydrive.' + method, data);
