@@ -18,6 +18,7 @@
         this.store           = {};
         this.routeUrls       = [];
         this.blacklistUrls   = [];
+        this.countThreshold  = 0;
     }
 
     ProbabilityDrive.prototype.observe = function(url) {
@@ -34,16 +35,21 @@
         return this;
     }
 
-    ProbabilityDrive.prototype.determine = function(url) {
-        url = url || this.currentUrl;
+    ProbabilityDrive.prototype.determine = function() {
+        url = this.currentUrl;
 
         var minCount = 0;
         var result = [];
 
         for (var i in this.store[url]) {
-            if (minCount <= this.store[url][i].count) {
-                result.push(this.store[url][i]);
-                minCount = this.store[url][i].count
+            var urlData = this.store[url][i];
+            if (urlData.count < this.countThreshold) {
+                continue;
+            }
+
+            if (minCount <= urlData.count) {
+                result.push(urlData.url);
+                minCount = urlData.count
             } else {
                 break;
             }
@@ -58,12 +64,16 @@
         var first = data.splice(0, 1)[0];
         var multiplier = 1 / first.probability;
 
-        var results = [first];
+        var results = [first.url];
 
         for (var i in data) {
             var urlData = data[i];
+            if (urlData.count < this.countThreshold) {
+                continue;
+            }
+
             if (urlData.probability * multiplier >= percentile) {
-                results.push(urlData);
+                results.push(urlData.url);
             } else {
                 break;
             }
@@ -71,19 +81,27 @@
         return results;
     }
 
-    ProbabilityDrive.prototype.threshold = function(probability) {
+    ProbabilityDrive.prototype.probability = function(probability) {
         var data = this.store[this.currentUrl];
         var result = [];
 
         for (var i in data) {
             var urlData = data[i];
+            if (urlData.count < this.countThreshold) {
+                continue;
+            }
+
             if (urlData.probability >= probability) {
-                result.push(urlData);
+                result.push(urlData.url);
             } else {
                 break;
             }
         }
         return result;
+    }
+
+    ProbabilityDrive.prototype.setCountThreshold = function(threshold) {
+        this.countThreshold = threshold;
     }
 
     ProbabilityDrive.prototype.routes = function(routes) {
@@ -103,11 +121,16 @@
     }
 
     ProbabilityDrive.prototype.getData = function() {
-        return this.store;
+        return {
+            currentUrl: this.currentUrl,
+            store: this.store
+        };
     }
 
     ProbabilityDrive.prototype.setData = function(data) {
-        this.store = data;
+        data = data || {};
+        this.currentUrl = data.currentUrl;
+        this.store = data.store || {};
     }
 
     // Aliases
