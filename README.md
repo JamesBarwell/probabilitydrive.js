@@ -85,6 +85,8 @@ var data = probabilitydrive.getData();
 // Set previously retrieved data
 probabilitydrive.setData(data);
 
+// i.e. the above are serialise and unserialise - you will need these if you wish to persist data.
+
 // You can chain calls from observe()
 probabilitydrive.observe('/example').determine();
 ```
