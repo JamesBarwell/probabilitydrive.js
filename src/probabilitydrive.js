@@ -129,8 +129,6 @@
     // Aliases
     ProbabilityDrive.prototype.here =
         ProbabilityDrive.prototype.observe
-    ProbabilityDrive.prototype.next =
-        ProbabilityDrive.prototype.determine
 
     function incrementUrl(url) {
         if (matchRoute(url, this.blacklistUrls)) {

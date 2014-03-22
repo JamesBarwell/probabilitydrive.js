@@ -329,11 +329,6 @@ describe('probabilitydrive.js', function() {
                 assert.equal(pdInstance.here, pdInstance.observe);
             });
         });
-        describe('next()', function() {
-            it('is an alias of determine()', function() {
-                assert.equal(pdInstance.next, pdInstance.determine);
-            });
-        });
     });
 
     function doJourney(steps) {
