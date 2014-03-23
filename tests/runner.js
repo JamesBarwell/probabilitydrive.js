@@ -331,6 +331,26 @@ describe('probabilitydrive.js', function() {
         });
     });
 
+    describe('error cases', function() {
+        describe('when no observations have been made', function() {
+            it('determine() should return an empty array', function() {
+                var result = pdInstance.determine();
+                assert.ok(Array.isArray(result));
+                assert.equal(result.length, 0);
+            });
+            it('probability() should return an empty array', function() {
+                var result = pdInstance.probability(0.5);
+                assert.ok(Array.isArray(result));
+                assert.equal(result.length, 0);
+            });
+            it('percentile() should return an empty array', function() {
+                var result = pdInstance.percentile(50);
+                assert.ok(Array.isArray(result));
+                assert.equal(result.length, 0);
+            });
+        });
+    });
+
     function doJourney(steps) {
         steps.forEach(function(url) {
             pdInstance.observe(url);

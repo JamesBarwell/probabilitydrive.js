@@ -54,6 +54,10 @@
         percentile = percentile / 100;
 
         var data = this.store[this.currentUrl];
+        if (!data) {
+            return [];
+        }
+
         var first = data.splice(0, 1)[0];
         var multiplier = 1 / first.probability;
 
