@@ -58,12 +58,18 @@
             return [];
         }
 
-        var first = data.splice(0, 1)[0];
+        var first = data[0];
+
         var multiplier = 1 / first.probability;
 
-        var results = [first.url];
+        var results = [];
+        results.push(first.url);
 
         for (var i in data) {
+            if (i == 0) {
+                continue;
+            }
+
             var urlData = data[i];
             if (urlData.count < this.countThreshold) {
                 continue;
