@@ -323,6 +323,38 @@ describe('probabilitydrive.js', function() {
         });
     });
 
+    describe('serialisation methods', function() {
+        it('should have the same results before and after serialisation', function() {
+            doJourney([
+                '/',
+                '/product/1',
+                '/',
+                '/product/2',
+                '/',
+                '/product/1',
+                '/'
+            ]);
+            var results = {
+                determine:   pdInstance.determine(),
+                probability: pdInstance.probability(0.5),
+                percentile:  pdInstance.percentile(50)
+            }
+
+            var data = pdInstance.getData();
+
+            var newPdInstance = new pd();
+            newPdInstance.setData(data);
+
+            var newResults = {
+                determine:   newPdInstance.determine(),
+                probability: newPdInstance.probability(0.5),
+                percentile:  newPdInstance.percentile(50)
+            };
+
+            assert.deepEqual(results, newResults);
+        });
+    });
+
     describe('alias functions', function() {
         describe('here()', function() {
             it('is an alias of observe()', function() {
@@ -347,6 +379,39 @@ describe('probabilitydrive.js', function() {
                 var result = pdInstance.percentile(50);
                 assert.ok(Array.isArray(result));
                 assert.equal(result.length, 0);
+            });
+        });
+        describe('when called multiple times', function() {
+            beforeEach(function() {
+                doJourney([
+                    '/product/1',
+                    '/',
+                    '/product/2',
+                    '/',
+                    '/page1',
+                    '/',
+                ]);
+            });
+            it('determine() should return the same result', function() {
+                var results = [];
+                for (var i = 0; i < 5; i++) {
+                    results.push(pdInstance.determine());
+                    assert.deepEqual(results[0], results[i]);
+                }
+            });
+            it('probability() should return the same result', function() {
+                var results = [];
+                for (var i = 0; i < 5; i++) {
+                    results.push(pdInstance.probability(0.5));
+                    assert.deepEqual(results[0], results[i]);
+                }
+            });
+            it('percentile() should return the same result', function() {
+                var results = [];
+                for (var i = 0; i < 5; i++) {
+                    results.push(pdInstance.percentile(50));
+                    assert.deepEqual(results[0], results[i]);
+                }
             });
         });
     });
