@@ -24,6 +24,6 @@
     "smoosh": "~0.4.1"
   },
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha tests/runner.js"
+    "test": "mocha tests/runner.js"
   }
 }
