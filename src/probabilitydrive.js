@@ -35,16 +35,11 @@
         var result = [];
 
         iterateStore.call(this, url, function(urlData) {
-            if (urlData.count < this.countThreshold) {
-                return;
-            }
-
-            if (minCount <= urlData.count) {
-                result.push(urlData.url);
-                minCount = urlData.count
-            } else {
+            if (minCount > urlData.count) {
                 return false;
             }
+            result.push(urlData.url);
+            minCount = urlData.count
         });
         return result;
     }
@@ -69,15 +64,11 @@
                 return;
             }
 
-            if (urlData.count < this.countThreshold) {
-                return;
-            }
-
-            if (urlData.probability * multiplier >= percentile) {
-                results.push(urlData.url);
-            } else {
+            if (urlData.probability * multiplier < percentile) {
                 return false;
             }
+
+            results.push(urlData.url);
         });
         return results;
     }
@@ -87,15 +78,10 @@
         var result = [];
 
         iterateStore.call(this, url, function(urlData, i) {
-            if (urlData.count < this.countThreshold) {
-                return;
-            }
-
-            if (urlData.probability >= probability) {
-                result.push(urlData.url);
-            } else {
+            if (urlData.probability < probability) {
                 return false;
             }
+            result.push(urlData.url);
         });
         return result;
     }
@@ -140,11 +126,17 @@
     /**
      * Convenience method to iterate through the store under a URL
      *
+     * Will always respect countThreshold
      * Returning false from the callback will terminate the loop early.
      */
     function iterateStore(url, callback) {
         for (var i in this.store[url]) {
             var urlData = this.store[url][i];
+
+            if (urlData.count < this.countThreshold) {
+                continue;
+            }
+
             if (false === callback.call(this, urlData, i)) {
                 return;
             }
