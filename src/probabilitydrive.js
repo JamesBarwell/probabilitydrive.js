@@ -34,19 +34,18 @@
         var minCount = 0;
         var result = [];
 
-        for (var i in this.store[url]) {
-            var urlData = this.store[url][i];
+        iterateStore.call(this, url, function(urlData) {
             if (urlData.count < this.countThreshold) {
-                continue;
+                return;
             }
 
             if (minCount <= urlData.count) {
                 result.push(urlData.url);
                 minCount = urlData.count
             } else {
-                break;
+                return false;
             }
-        }
+        });
         return result;
     }
 
@@ -65,22 +64,21 @@
         var results = [];
         results.push(first.url);
 
-        for (var i in data) {
+        iterateStore.call(this, url, function(urlData, i) {
             if (i == 0) {
-                continue;
+                return;
             }
 
-            var urlData = data[i];
             if (urlData.count < this.countThreshold) {
-                continue;
+                return;
             }
 
             if (urlData.probability * multiplier >= percentile) {
                 results.push(urlData.url);
             } else {
-                break;
+                return false;
             }
-        }
+        });
         return results;
     }
 
@@ -88,18 +86,17 @@
         var data = this.store[this.currentUrl];
         var result = [];
 
-        for (var i in data) {
-            var urlData = data[i];
+        iterateStore.call(this, url, function(urlData, i) {
             if (urlData.count < this.countThreshold) {
-                continue;
+                return;
             }
 
             if (urlData.probability >= probability) {
                 result.push(urlData.url);
             } else {
-                break;
+                return false;
             }
-        }
+        });
         return result;
     }
 
@@ -139,6 +136,20 @@
     // Aliases
     ProbabilityDrive.prototype.here =
         ProbabilityDrive.prototype.observe
+
+    /**
+     * Convenience method to iterate through the store under a URL
+     *
+     * Returning false from the callback will terminate the loop early.
+     */
+    function iterateStore(url, callback) {
+        for (var i in this.store[url]) {
+            var urlData = this.store[url][i];
+            if (false === callback.call(this, urlData, i)) {
+                return;
+            }
+        }
+    }
 
     function incrementUrl(url) {
         if (matchRoute(url, this.blacklistUrls)) {
