@@ -15,32 +15,26 @@
     }
 
     ProbabilityDrive.prototype.observe = function(url) {
-        if (!this.currentUrl || this.currentUrl === url) {
-            this.currentUrl = url;
-            return this;
+        if (url !== this.currentUrl) {
+            incrementUrl.call(this, url);
         }
 
-        incrementUrl.call(this, url);
-        analyse.call(this, this.currentUrl);
-
         this.currentUrl = url;
-
         return this;
     }
 
     ProbabilityDrive.prototype.determine = function() {
-        url = this.currentUrl;
-
         var minCount = 0;
-        var result = [];
+        var result   = [];
 
-        iterateStore.call(this, url, function(urlData) {
+        iterateStore.call(this, this.currentUrl, function(urlData) {
             if (minCount > urlData.count) {
                 return false;
             }
             result.push(urlData.url);
             minCount = urlData.count
         });
+
         return result;
     }
 
@@ -48,41 +42,35 @@
         percentile = percentile / 100;
 
         var data = this.store[this.currentUrl];
-        if (!data) {
+        if (!data || !data[0]) {
             return [];
         }
 
-        var first = data[0];
+        var multiplier = 1 / data[0].probability;
+        var result = [];
 
-        var multiplier = 1 / first.probability;
-
-        var results = [];
-        results.push(first.url);
-
-        iterateStore.call(this, url, function(urlData, i) {
-            if (i == 0) {
-                return;
-            }
-
-            if (urlData.probability * multiplier < percentile) {
+        iterateStore.call(this, this.currentUrl, function(urlData, i) {
+            if (i !== 0 &&
+                urlData.probability * multiplier < percentile
+            ) {
                 return false;
             }
-
-            results.push(urlData.url);
+            result.push(urlData.url);
         });
-        return results;
+
+        return result;
     }
 
     ProbabilityDrive.prototype.probability = function(probability) {
-        var data = this.store[this.currentUrl];
         var result = [];
 
-        iterateStore.call(this, url, function(urlData, i) {
+        iterateStore.call(this, this.currentUrl, function(urlData, i) {
             if (urlData.probability < probability) {
                 return false;
             }
             result.push(urlData.url);
         });
+
         return result;
     }
 
@@ -109,14 +97,15 @@
     ProbabilityDrive.prototype.getData = function() {
         return {
             currentUrl: this.currentUrl,
-            store: this.store
+            store:      this.store
         };
     }
 
     ProbabilityDrive.prototype.setData = function(data) {
         data = data || {};
+
         this.currentUrl = data.currentUrl;
-        this.store = data.store || {};
+        this.store      = data.store || {};
     }
 
     // Aliases
@@ -126,14 +115,18 @@
     /**
      * Convenience method to iterate through the store under a URL
      *
-     * Will always respect countThreshold
+     * Can optionally filter count threshold; defaults to global threshold
      * Returning false from the callback will terminate the loop early.
      */
-    function iterateStore(url, callback) {
+    function iterateStore(url, callback, countThreshold) {
+        if (countThreshold === undefined) {
+            countThreshold = this.countThreshold;
+        }
+
         for (var i in this.store[url]) {
             var urlData = this.store[url][i];
 
-            if (urlData.count < this.countThreshold) {
+            if (countThreshold && urlData.count < countThreshold) {
                 continue;
             }
 
@@ -158,13 +151,13 @@
         this.store[this.currentUrl] = this.store[this.currentUrl] || [];
 
         var found = false;
-        for (var i in this.store[this.currentUrl]) {
-            if (this.store[this.currentUrl][i].url === url) {
+
+        iterateStore.call(this, this.currentUrl, function(urlData, i) {
+            if (urlData.url === url) {
                 found = true;
-                this.store[this.currentUrl][i].count += 1;
-                break;
+                urlData.count++;
             }
-        }
+        }, 0);
 
         if (!found) {
             this.store[this.currentUrl].push({
@@ -173,6 +166,8 @@
                 probability: 0
             });
         }
+
+        analyse.call(this, url);
     }
 
     function analyse(url) {
@@ -180,13 +175,15 @@
             return;
         }
 
-        var total = this.store[url].reduce(function(total, urlData) {
-            return total += urlData.count;
+        var total = 0;
+
+        iterateStore.call(this, url, function(urlData, i) {
+            total += urlData.count;
         }, 0);
 
-        this.store[url].forEach(function(urlData) {
+        iterateStore.call(this, url, function(urlData, i) {
             urlData.probability = urlData.count / total;
-        });
+        }, 0);
 
         this.store[url].sort(function(a, b) {
             return a.count < b.count;
