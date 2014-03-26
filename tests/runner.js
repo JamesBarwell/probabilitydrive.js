@@ -12,21 +12,10 @@ describe('probabilitydrive.js', function() {
 
     describe('observe()', function() {
         beforeEach(function() {
-            // Start each test from the root page
-            doJourney([
-                '/'
-            ]);
+            navigatePaths('/');
         });
 
         it('should return [] when it has no data', function() {
-            var result = pdInstance.determine();
-            assert.equal(result.length, 0);
-        });
-        it('should ignore repeat calls with the same data', function() {
-            doJourney([
-                '/',
-                '/',
-            ]);
             var result = pdInstance.determine();
             assert.equal(result.length, 0);
         });
@@ -38,14 +27,11 @@ describe('probabilitydrive.js', function() {
 
     describe('determine()', function() {
         beforeEach(function() {
-            // Start each test from the root page
-            doJourney([
-                '/'
-            ]);
+            navigatePaths('/');
         });
 
         it('should predict a simple repeat path', function() {
-            doJourney([
+            navigatePaths([
                 '/page1',
                 '/'
             ]);
@@ -54,7 +40,7 @@ describe('probabilitydrive.js', function() {
             assert.equal(result[0], '/page1');
         });
         it('should predict multiple paths when count weightings are equal', function() {
-            doJourney([
+            navigatePaths([
                 '/page1',
                 '/',
                 '/page2',
@@ -67,7 +53,7 @@ describe('probabilitydrive.js', function() {
             assert.equal(result[1], '/page2');
         });
         it('should prioritise paths that have a higher count weighting', function() {
-            doJourney([
+            navigatePaths([
                 '/page1',
                 '/',
                 '/page2',
@@ -88,29 +74,14 @@ describe('probabilitydrive.js', function() {
             });
 
             it('should ignore URL data that has not been observed 3 times', function() {
-                doJourney([
-                    '/page1',
-                    '/',
-                    '/page1',
-                    '/'
-                ]);
+                navigateBackForth('/page1', '/', 2);
                 var result = pdInstance.determine();
                 assert.equal(result.length, 0);
             });
 
             it('should still predict URLs that have met the count threshold', function() {
-                doJourney([
-                    '/page1',
-                    '/',
-                    '/page1',
-                    '/',
-                    '/page2',
-                    '/',
-                    '/page2',
-                    '/',
-                    '/page2',
-                    '/'
-                ]);
+                navigateBackForth('/page1', '/', 2);
+                navigateBackForth('/page2', '/', 3);
                 var result = pdInstance.determine();
                 assert.equal(result.length, 1);
                 assert.equal(result[0], '/page2');
@@ -121,33 +92,10 @@ describe('probabilitydrive.js', function() {
 
     describe('percentile()', function() {
         beforeEach(function() {
-            // Start each test from the root page
-            doJourney([
-                '/',
-                // 5 visits to /a
-                '/a',
-                '/',
-                '/a',
-                '/',
-                '/a',
-                '/',
-                '/a',
-                '/',
-                '/a',
-                '/',
-                // 4 visits to /b
-                '/b',
-                '/',
-                '/b',
-                '/',
-                '/b',
-                '/',
-                '/b',
-                '/',
-                // 1 visit to /c
-                '/c',
-                '/',
-            ]);
+            navigatePaths('/');
+            navigateBackForth('/a', '/', 5);
+            navigateBackForth('/b', '/', 4);
+            navigateBackForth('/c', '/', 1);
         });
 
         it('should return the 100th percentile of results', function() {
@@ -183,33 +131,10 @@ describe('probabilitydrive.js', function() {
 
     describe('probability()', function() {
         beforeEach(function() {
-            // Start each test from the root page
-            doJourney([
-                '/',
-                // 5 visits to /a
-                '/a',
-                '/',
-                '/a',
-                '/',
-                '/a',
-                '/',
-                '/a',
-                '/',
-                '/a',
-                '/',
-                // 4 visits to /b
-                '/b',
-                '/',
-                '/b',
-                '/',
-                '/b',
-                '/',
-                '/b',
-                '/',
-                // 1 visit to /c
-                '/c',
-                '/',
-            ]);
+            navigatePaths('/');
+            navigateBackForth('/a', '/', 5);
+            navigateBackForth('/b', '/', 4);
+            navigateBackForth('/c', '/', 1);
         });
 
         describe('should return results over the probability threshold', function() {
@@ -249,14 +174,11 @@ describe('probabilitydrive.js', function() {
                 '/product/:id'
             ]);
 
-            // Start each test from the root page
-            doJourney([
-                '/'
-            ]);
+            navigatePaths('/');
         });
 
         it('should combine parameterised URLs', function() {
-            doJourney([
+            navigatePaths([
                 '/product/1',
                 '/',
                 '/product/2',
@@ -277,28 +199,19 @@ describe('probabilitydrive.js', function() {
                 '/product/:id'
             ]);
 
-            // Start each test from the root page
-            doJourney([
-                '/'
-            ]);
+            navigatePaths('/');
         });
 
         it('should not count results for blacklisted pages', function() {
-            doJourney([
-                '/about',
-                '/',
-                '/about',
-                '/',
-                '/page1',
-                '/'
-            ]);
+            navigateBackForth('/about', '/', 2);
+            navigateBackForth('/page1', '/', 1);
             var result = pdInstance.determine();
             assert.equal(result.length, 1);
             assert.equal(result[0], '/page1');
         });
 
         it('should still record results from a blacklisted page to a leaf page', function() {
-            doJourney([
+            navigatePaths([
                 '/about',
                 '/page1',
                 '/about',
@@ -309,14 +222,9 @@ describe('probabilitydrive.js', function() {
         });
 
         it('should blacklist parameterised pages', function() {
-            doJourney([
-                '/product/1',
-                '/',
-                '/product/2',
-                '/',
-                '/page1',
-                '/',
-            ]);
+            navigateBackForth('/product/1', '/', 1);
+            navigateBackForth('/product/2', '/', 1);
+            navigateBackForth('/page1', '/', 1);
             var result = pdInstance.determine();
             assert.equal(result.length, 1);
             assert.equal(result[0], '/page1');
@@ -325,15 +233,10 @@ describe('probabilitydrive.js', function() {
 
     describe('serialisation methods', function() {
         it('should have the same results before and after serialisation', function() {
-            doJourney([
-                '/',
-                '/product/1',
-                '/',
-                '/product/2',
-                '/',
-                '/product/1',
-                '/'
-            ]);
+            navigatePaths('/');
+            navigateBackForth('/product/1', '/', 1);
+            navigateBackForth('/product/2', '/', 1);
+            navigateBackForth('/product/1', '/', 1);
             var results = {
                 determine:   pdInstance.determine(),
                 probability: pdInstance.probability(0.5),
@@ -381,16 +284,24 @@ describe('probabilitydrive.js', function() {
                 assert.equal(result.length, 0);
             });
         });
+        describe('when the same observations are made multiple times', function() {
+            beforeEach(function() {
+                navigatePaths([
+                    '/',
+                    '/',
+                    '/'
+                ]);
+            });
+            it('should ignore repeat calls with the same data', function() {
+                var result = pdInstance.determine();
+                assert.equal(result.length, 0);
+            });
+        });
         describe('when called multiple times', function() {
             beforeEach(function() {
-                doJourney([
-                    '/product/1',
-                    '/',
-                    '/product/2',
-                    '/',
-                    '/page1',
-                    '/',
-                ]);
+                navigateBackForth('/product/1', '/', 1);
+                navigateBackForth('/product/2', '/', 1);
+                navigateBackForth('/page1', '/', 1);
             });
             it('determine() should return the same result', function() {
                 var results = [];
@@ -416,11 +327,29 @@ describe('probabilitydrive.js', function() {
         });
     });
 
-    function doJourney(steps) {
+    /**
+     * Helper function to simulate moving along the paths in the given array
+     */
+    function navigatePaths(steps) {
+        if (typeof steps === 'string') {
+            steps = [steps];
+        }
         steps.forEach(function(url) {
             pdInstance.observe(url);
         });
     }
+
+    /**
+     * Helper function to simulate alternating back and forth between the two
+     * given paths
+     */
+     function navigateBackForth(forth, back, repeat) {
+        for (var i = 0; i < (repeat || 0); i++) {
+            pdInstance.observe(forth);
+            pdInstance.observe(back);
+        }
+     }
+
 
     function roundTo2DecimalPlaces(number) {
         return Math.round(number * 100) / 100;
