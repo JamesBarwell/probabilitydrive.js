@@ -91,11 +91,6 @@ probabilitydrive.setData(data);
 probabilitydrive.observe('/example').determine();
 ```
 
-## Aliases
-
-### observe()
-* here
-
 ## Credits
 Thanks to...
 * [umdjs](https://github.com/umdjs/umd) for the AMD bootstrap

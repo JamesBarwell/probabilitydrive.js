@@ -258,14 +258,6 @@ describe('probabilitydrive.js', function() {
         });
     });
 
-    describe('alias functions', function() {
-        describe('here()', function() {
-            it('is an alias of observe()', function() {
-                assert.equal(pdInstance.here, pdInstance.observe);
-            });
-        });
-    });
-
     describe('error cases', function() {
         describe('when no observations have been made', function() {
             it('determine() should return an empty array', function() {

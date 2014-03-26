@@ -108,10 +108,6 @@
         this.store      = data.store || {};
     }
 
-    // Aliases
-    ProbabilityDrive.prototype.here =
-        ProbabilityDrive.prototype.observe
-
     /**
      * Convenience method to iterate through the store under a URL
      *
