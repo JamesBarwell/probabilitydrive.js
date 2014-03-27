@@ -2,7 +2,7 @@
   "name": "probabilitydrive.js",
   "author": "James Barwell <jb@jamesbarwell.co.uk>",
   "description": "Determines where a user is going to navigate to next on a website",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "main": "probabilitydrive.js",
   "keywords:": [
     "probability",
