@@ -1,5 +1,10 @@
 build:
-	node_modules/smoosh/bin/smoosh make build.json
+	node_modules/.bin/smoosh make build.json
 
 test:
-	npm test
+	node_modules/.bin/mocha
+
+spec:
+	node_modules/.bin/mocha --reporter spec
+
+.PHONY: test
