@@ -26,22 +26,15 @@ $(function() {
 
 // Predict the most likely next paths(s)
 probabilitydrive.determine();
-[
-    { url:'/products', count: 6, probability: 0.46153846153846156 }
-]
+[ '/products' ]
 
 // Predict the next paths(s) greater than equal to a given probability threshold
 probabilitydrive.probability(0.4);
-[
-    { url:'/products', count: 6, probability: 0.46153846153846156 }
-]
+[ '/products' ]
 
 // Predict the next paths(s) that are in the given probability percentile or above
 probabilitydrive.percentile(40);
-[
-    { url:'/products', count: 6, probability: 0.46153846153846156 },
-    { url:'/events', count: 5, probability: 0.38461538461538464 }
-]
+[ '/products', '/events' ]
 ```
 
 ## Setup examples
@@ -63,7 +56,7 @@ probabilitydrive.observe('/products/1/info');
 probabilitydrive.observe('/products/2/info');
 
 probabilitydrive.determine();
-[ { url:'/products/:id', count: 42, probability: 0.5 } ]
+[ '/products/:id' ]
 
 
 // Blacklist paths you want to ignore entirely
