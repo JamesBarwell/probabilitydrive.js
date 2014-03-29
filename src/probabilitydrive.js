@@ -7,19 +7,19 @@
 }(this, function () {
 
     function ProbabilityDrive() {
-        this.currentUrl;
+        this.currentPath;
         this.store           = {};
-        this.routeUrls       = [];
-        this.blacklistUrls   = [];
+        this.routePaths       = [];
+        this.blacklistPaths   = [];
         this.countThreshold  = 0;
     }
 
-    ProbabilityDrive.prototype.observe = function(url) {
-        if (url !== this.currentUrl) {
-            incrementUrl.call(this, url);
+    ProbabilityDrive.prototype.observe = function(path) {
+        if (path !== this.currentPath) {
+            incrementPath.call(this, path);
         }
 
-        this.currentUrl = url;
+        this.currentPath = path;
         return this;
     }
 
@@ -27,12 +27,12 @@
         var minCount = 0;
         var result   = [];
 
-        iterateStore.call(this, this.currentUrl, function(urlData) {
-            if (minCount > urlData.count) {
+        iterateStore.call(this, this.currentPath, function(pathData) {
+            if (minCount > pathData.count) {
                 return false;
             }
-            result.push(urlData.url);
-            minCount = urlData.count
+            result.push(pathData.path);
+            minCount = pathData.count
         });
 
         return result;
@@ -41,7 +41,7 @@
     ProbabilityDrive.prototype.percentile = function(percentile) {
         percentile = percentile / 100;
 
-        var data = this.store[this.currentUrl];
+        var data = this.store[this.currentPath];
         if (!data || !data[0]) {
             return [];
         }
@@ -49,13 +49,13 @@
         var multiplier = 1 / data[0].probability;
         var result = [];
 
-        iterateStore.call(this, this.currentUrl, function(urlData, i) {
+        iterateStore.call(this, this.currentPath, function(pathData, i) {
             if (i !== 0 &&
-                urlData.probability * multiplier < percentile
+                pathData.probability * multiplier < percentile
             ) {
                 return false;
             }
-            result.push(urlData.url);
+            result.push(pathData.path);
         });
 
         return result;
@@ -64,11 +64,11 @@
     ProbabilityDrive.prototype.probability = function(probability) {
         var result = [];
 
-        iterateStore.call(this, this.currentUrl, function(urlData, i) {
-            if (urlData.probability < probability) {
+        iterateStore.call(this, this.currentPath, function(pathData, i) {
+            if (pathData.probability < probability) {
                 return false;
             }
-            result.push(urlData.url);
+            result.push(pathData.path);
         });
 
         return result;
@@ -80,23 +80,23 @@
 
     ProbabilityDrive.prototype.routes = function(routes) {
         for (var i = 0; i < routes.length; i++) {
-            this.routeUrls.push(
-                stripAndBreakUrl(routes[i], '/')
+            this.routePaths.push(
+                stripAndBreakPath(routes[i], '/')
             )
         }
     }
 
     ProbabilityDrive.prototype.blacklist = function(routes) {
         for (var i = 0; i < routes.length; i++) {
-            this.blacklistUrls.push(
-                stripAndBreakUrl(routes[i], '/')
+            this.blacklistPaths.push(
+                stripAndBreakPath(routes[i], '/')
             )
         }
     }
 
     ProbabilityDrive.prototype.getData = function() {
         return {
-            currentUrl: this.currentUrl,
+            currentPath: this.currentPath,
             store:      this.store
         };
     }
@@ -104,7 +104,7 @@
     ProbabilityDrive.prototype.setData = function(data) {
         data = data || {};
 
-        this.currentUrl = data.currentUrl;
+        this.currentPath = data.currentPath;
         this.store      = data.store || {};
     }
 
@@ -114,96 +114,96 @@
      * Can optionally filter count threshold; defaults to global threshold
      * Returning false from the callback will terminate the loop early.
      */
-    function iterateStore(url, callback, countThreshold) {
+    function iterateStore(path, callback, countThreshold) {
         if (countThreshold === undefined) {
             countThreshold = this.countThreshold;
         }
 
-        for (var i in this.store[url]) {
-            var urlData = this.store[url][i];
+        for (var i in this.store[path]) {
+            var pathData = this.store[path][i];
 
-            if (countThreshold && urlData.count < countThreshold) {
+            if (countThreshold && pathData.count < countThreshold) {
                 continue;
             }
 
-            if (false === callback.call(this, urlData, i)) {
+            if (false === callback.call(this, pathData, i)) {
                 return;
             }
         }
     }
 
-    function incrementUrl(url) {
-        if (matchRoute(url, this.blacklistUrls)) {
+    function incrementPath(path) {
+        if (matchRoute(path, this.blacklistPaths)) {
             // Route is blacklisted
             return;
         }
 
-        var matchResult = matchRoute(url, this.routeUrls);
+        var matchResult = matchRoute(path, this.routePaths);
         if (matchResult) {
             // Use parameterised route
-            url = matchResult;
+            path = matchResult;
         }
 
-        this.store[this.currentUrl] = this.store[this.currentUrl] || [];
+        this.store[this.currentPath] = this.store[this.currentPath] || [];
 
         var found = false;
 
-        iterateStore.call(this, this.currentUrl, function(urlData, i) {
-            if (urlData.url === url) {
+        iterateStore.call(this, this.currentPath, function(pathData, i) {
+            if (pathData.path === path) {
                 found = true;
-                urlData.count++;
+                pathData.count++;
             }
         }, 0);
 
         if (!found) {
-            this.store[this.currentUrl].push({
-                url:   url,
+            this.store[this.currentPath].push({
+                path:   path,
                 count: 1,
                 probability: 0
             });
         }
 
-        analyse.call(this, url);
+        analyse.call(this, path);
     }
 
-    function analyse(url) {
-        if (!this.store[url]) {
+    function analyse(path) {
+        if (!this.store[path]) {
             return;
         }
 
         var total = 0;
 
-        iterateStore.call(this, url, function(urlData, i) {
-            total += urlData.count;
+        iterateStore.call(this, path, function(pathData, i) {
+            total += pathData.count;
         }, 0);
 
-        iterateStore.call(this, url, function(urlData, i) {
-            urlData.probability = urlData.count / total;
+        iterateStore.call(this, path, function(pathData, i) {
+            pathData.probability = pathData.count / total;
         }, 0);
 
-        this.store[url].sort(function(a, b) {
+        this.store[path].sort(function(a, b) {
             return a.count < b.count;
         });
     }
 
-    function matchRoute(url, list) {
-        var urlParts = stripAndBreakUrl(url, '/');
+    function matchRoute(path, list) {
+        var pathParts = stripAndBreakPath(path, '/');
 
         for (var i = 0; i < list.length; i++) {
-            var routeUrlParts = list[i];
-            if (isMatchRouteParts(urlParts, routeUrlParts)) {
-                return '/' + routeUrlParts.join('/');
+            var routePathParts = list[i];
+            if (isMatchRouteParts(pathParts, routePathParts)) {
+                return '/' + routePathParts.join('/');
             }
         }
 
         return false;
     }
 
-    function isMatchRouteParts(urlParts, routeUrlParts) {
-        for (var i = 0; i < routeUrlParts.length; i++) {
-            if (!urlParts[i] ||
-                (routeUrlParts[i] !== urlParts[i] &&
-                routeUrlParts[i].indexOf(':') === -1)
+    function isMatchRouteParts(pathParts, routePathParts) {
+        for (var i = 0; i < routePathParts.length; i++) {
+            if (!pathParts[i] ||
+                (routePathParts[i] !== pathParts[i] &&
+                routePathParts[i].indexOf(':') === -1)
             ) {
                 break;
             }
@@ -213,7 +213,7 @@
         return false;
     }
 
-    function stripAndBreakUrl(string, character) {
+    function stripAndBreakPath(string, character) {
         string = string.charAt(0) !== character ? string : string.substring(1);
         return string.split('/');
     }
