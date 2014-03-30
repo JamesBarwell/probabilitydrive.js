@@ -14,6 +14,11 @@
         this.countThreshold  = 0;
     }
 
+    /**
+     * Observe a specified path, to track a user's journey
+     *
+     * @param {string} path
+     */
     ProbabilityDrive.prototype.observe = function(path) {
         if (path !== this.currentPath) {
             incrementPath.call(this, path);
@@ -23,6 +28,11 @@
         return this;
     }
 
+    /**
+     * Get the most likely next paths in the user's journey
+     *
+     * @return string[]
+     */
     ProbabilityDrive.prototype.determine = function() {
         var minCount = 0;
         var result   = [];
@@ -38,6 +48,11 @@
         return result;
     }
 
+    /**
+     * Get all the paths whose probability is in the given percentile and above
+     *
+     * @return string[]
+     */
     ProbabilityDrive.prototype.percentile = function(percentile) {
         percentile = percentile / 100;
 
@@ -61,6 +76,11 @@
         return result;
     }
 
+    /**
+     * Get all the paths whose probability is over the specified amount
+     *
+     * @return string[]
+     */
     ProbabilityDrive.prototype.probability = function(probability) {
         var result = [];
 
