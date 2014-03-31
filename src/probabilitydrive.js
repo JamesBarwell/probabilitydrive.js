@@ -94,10 +94,21 @@
         return result;
     }
 
+    /**
+     * Set a threshold for path observations which unless met will exclude them
+     * from predictions
+     *
+     * @param {number} threshold
+     */
     ProbabilityDrive.prototype.setCountThreshold = function(threshold) {
         this.countThreshold = threshold;
     }
 
+    /**
+     * Parameterise paths so that they will be bundled together
+     *
+     * @param {string[]} routes
+     */
     ProbabilityDrive.prototype.routes = function(routes) {
         for (var i = 0; i < routes.length; i++) {
             this.routePaths.push(
@@ -106,6 +117,11 @@
         }
     }
 
+    /**
+     * Blacklist paths so that they will never be returned in predictions
+     *
+     * @param {string[]} routes
+     */
     ProbabilityDrive.prototype.blacklist = function(routes) {
         for (var i = 0; i < routes.length; i++) {
             this.blacklistPaths.push(
@@ -114,6 +130,11 @@
         }
     }
 
+    /**
+     * Serialise the observation data
+     *
+     * @return string[]
+     */
     ProbabilityDrive.prototype.getData = function() {
         return {
             currentPath: this.currentPath,
@@ -121,6 +142,11 @@
         };
     }
 
+    /**
+     * Deserialise the observation data
+     *
+     * @param {string[]} data
+     */
     ProbabilityDrive.prototype.setData = function(data) {
         data = data || {};
 
