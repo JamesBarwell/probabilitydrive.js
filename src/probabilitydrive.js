@@ -6,12 +6,12 @@
     }
 }(this, function () {
 
-    function ProbabilityDrive() {
+    function ProbabilityDrive(countThreshold, routes, blacklist) {
         this.currentPath;
-        this.store           = {};
-        this.routePaths       = [];
-        this.blacklistPaths   = [];
-        this.countThreshold  = 0;
+        this.store          = {};
+        this.countThreshold = countThreshold || 0;
+        this.routePaths     = routes || [];
+        this.blacklistPaths = blacklist || [];
     }
 
     /**

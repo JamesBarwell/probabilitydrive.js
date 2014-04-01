@@ -231,6 +231,31 @@ describe('probabilitydrive.js', function() {
         });
     });
 
+    describe('constructor', function() {
+        context('when count threshold is passed as first argument', function() {
+            beforeEach(function() {
+                pdInstance = new pd(5);
+            });
+            it('should use the count threshold');
+        });
+        context('when routes is passed as second argument', function() {
+            beforeEach(function() {
+                pdInstance = new pd(null, [
+                    '/product/:id'
+                ]);
+            });
+            it('should use the routes');
+        });
+        context('when blacklist is passed as third argument', function() {
+            beforeEach(function() {
+                pdInstance = new pd(null, null, [
+                    '/404'
+                ]);
+            });
+            it('should use the blacklist');
+        });
+    });
+
     describe('serialisation methods', function() {
         it('should have the same results before and after serialisation', function() {
             navigatePaths('/');
