@@ -68,6 +68,19 @@ describe('probabilitydrive.js', function() {
             assert.equal(result[0], '/page2');
         });
 
+        context('when given a path', function() {
+            it('should predict within that context', function() {
+                navigatePaths([
+                    '/step1',
+                    '/step2',
+                    '/'
+                ]);
+                var result = pdInstance.determine('/step1');
+                assert.equal(result.length, 1);
+                assert.equal(result[0], '/step2');
+            });
+        });
+
         describe('with countThreshold() at 3', function() {
             beforeEach(function() {
                 pdInstance.setCountThreshold(3);
@@ -116,6 +129,10 @@ describe('probabilitydrive.js', function() {
             assert.equal(result[1], '/b');
         });
 
+        context('when given a path', function() {
+            it('should predict within that context');
+        });
+
         describe('with countThreshold() at 5', function() {
             beforeEach(function() {
                 pdInstance.setCountThreshold(5);
@@ -153,6 +170,10 @@ describe('probabilitydrive.js', function() {
                 assert.equal(result[0], '/a');
                 assert.equal(result[1], '/b');
             });
+        });
+
+        context('when given a path', function() {
+            it('should predict within that context');
         });
 
         describe('with countThreshold() at 5', function() {

@@ -33,11 +33,11 @@
      *
      * @return string[]
      */
-    ProbabilityDrive.prototype.determine = function() {
+    ProbabilityDrive.prototype.determine = function(path) {
         var minCount = 0;
         var result   = [];
 
-        iterateStore.call(this, this.currentPath, function(pathData) {
+        iterateStore.call(this, path || this.currentPath, function(pathData) {
             if (minCount > pathData.count) {
                 return false;
             }
