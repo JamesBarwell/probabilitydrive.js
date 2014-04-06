@@ -31,13 +31,17 @@
     /**
      * Get the most likely next paths in the user's journey
      *
+     * @param {string} path
+     *
      * @return string[]
      */
     ProbabilityDrive.prototype.determine = function(path) {
+        path = path || this.currentPath;
+
         var minCount = 0;
         var result   = [];
 
-        iterateStore.call(this, path || this.currentPath, function(pathData) {
+        iterateStore.call(this, path, function(pathData) {
             if (minCount > pathData.count) {
                 return false;
             }
@@ -51,12 +55,16 @@
     /**
      * Get all the paths whose probability is in the given percentile and above
      *
+     * @param {number} percentile
+     * @param {string} path
+     *
      * @return string[]
      */
-    ProbabilityDrive.prototype.percentile = function(percentile) {
+    ProbabilityDrive.prototype.percentile = function(percentile, path) {
         percentile = percentile / 100;
+        path = path || this.currentPath;
 
-        var data = this.store[this.currentPath];
+        var data = this.store[path];
         if (!data || !data[0]) {
             return [];
         }
@@ -64,7 +72,7 @@
         var multiplier = 1 / data[0].probability;
         var result = [];
 
-        iterateStore.call(this, this.currentPath, function(pathData, i) {
+        iterateStore.call(this, path, function(pathData, i) {
             if (i !== 0 &&
                 pathData.probability * multiplier < percentile
             ) {
@@ -79,12 +87,16 @@
     /**
      * Get all the paths whose probability is over the specified amount
      *
+     * @param {number} probability
+     * @param {string} path
+     *
      * @return string[]
      */
-    ProbabilityDrive.prototype.probability = function(probability) {
+    ProbabilityDrive.prototype.probability = function(probability, path) {
+        path = path || this.currentPath;
         var result = [];
 
-        iterateStore.call(this, this.currentPath, function(pathData, i) {
+        iterateStore.call(this, path, function(pathData, i) {
             if (pathData.probability < probability) {
                 return false;
             }

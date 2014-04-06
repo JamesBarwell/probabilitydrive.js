@@ -130,7 +130,11 @@ describe('probabilitydrive.js', function() {
         });
 
         context('when given a path', function() {
-            it('should predict within that context');
+            it('should predict within that context', function() {
+                var result = pdInstance.percentile(100, '/b');
+                assert.equal(result.length, 1);
+                assert.equal(result[0], '/');
+            });
         });
 
         describe('with countThreshold() at 5', function() {
@@ -173,7 +177,11 @@ describe('probabilitydrive.js', function() {
         });
 
         context('when given a path', function() {
-            it('should predict within that context');
+            it('should predict within that context', function() {
+                var result = pdInstance.probability(0.5, '/b')
+                assert.equal(result.length, 1);
+                assert.equal(result[0], '/');
+            });
         });
 
         describe('with countThreshold() at 5', function() {
