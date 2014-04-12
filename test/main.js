@@ -75,6 +75,7 @@ describe('probabilitydrive.js', function() {
                     '/step2',
                     '/'
                 ]);
+
                 var result = pdInstance.determine('/step1');
                 assert.equal(result.length, 1);
                 assert.equal(result[0], '/step2');
@@ -181,6 +182,10 @@ describe('probabilitydrive.js', function() {
                 var result = pdInstance.probability(0.5, '/b')
                 assert.equal(result.length, 1);
                 assert.equal(result[0], '/');
+
+                var result2 = pdInstance.probability(1, '/c')
+                assert.equal(result2.length, 1);
+                assert.equal(result2[0], '/');
             });
         });
 

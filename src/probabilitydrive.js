@@ -221,7 +221,7 @@
             });
         }
 
-        analyse.call(this, path);
+        analyse.call(this, this.currentPath);
     }
 
     function analyse(path) {
