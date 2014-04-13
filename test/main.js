@@ -187,6 +187,10 @@ describe('probabilitydrive.js', function() {
                 assert.equal(result2.length, 1);
                 assert.equal(result2[0], '/');
             });
+            it('should not have a path of "undefined"', function() {
+                var result = pdInstance.probability(0, 'undefined')
+                assert.equal(result.length, 0);
+            });
         });
 
         describe('with countThreshold() at 5', function() {

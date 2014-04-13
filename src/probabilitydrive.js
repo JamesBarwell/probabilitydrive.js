@@ -20,6 +20,11 @@
      * @param {string} path
      */
     ProbabilityDrive.prototype.observe = function(path) {
+        if (this.currentPath === undefined) {
+            this.currentPath = path;
+            return this;
+        }
+
         if (path !== this.currentPath) {
             incrementPath.call(this, path);
         }
