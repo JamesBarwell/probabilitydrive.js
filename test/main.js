@@ -187,10 +187,6 @@ describe('probabilitydrive.js', function() {
                 assert.equal(result2.length, 1);
                 assert.equal(result2[0], '/');
             });
-            it('should not have a path of "undefined"', function() {
-                var result = pdInstance.probability(0, 'undefined')
-                assert.equal(result.length, 0);
-            });
         });
 
         describe('with countThreshold() at 5', function() {
@@ -378,6 +374,16 @@ describe('probabilitydrive.js', function() {
                     results.push(pdInstance.percentile(50));
                     assert.deepEqual(results[0], results[i]);
                 }
+            });
+        });
+        describe('when predictions are made for unknown paths', function() {
+            beforeEach(function() {
+                navigatePaths('/');
+                navigateBackForth('/product/1', '/', 1);
+            });
+            it('should return an empty array', function() {
+                var result = pdInstance.probability(0, 'undefined')
+                assert.equal(result.length, 0);
             });
         });
     });
