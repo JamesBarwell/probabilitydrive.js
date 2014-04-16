@@ -3,6 +3,8 @@ probabilitydrive.js
 
 Determines where a user is going to navigate to next on a website.
 
+[![Build Status](https://travis-ci.org/JamesBarwell/probabilitydrive.js.svg?branch=master)](https://travis-ci.org/JamesBarwell/probabilitydrive.js)
+
 Visitors to a website will often make repeated journeys through the same set of pages, or repeat the journeys made by others. On this basis, if we can observe where a user has been, we can make a good guess at where they will go next.
 
 This library will help to analyse which paths have been visited previously and to make probabilistic predictions based on that knowledge. The accuracy of these predictions will depend upon the website in question, and the free will exhibited by its users!
