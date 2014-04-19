@@ -11,6 +11,16 @@ This library will help to analyse which paths have been visited previously and t
 
 Please note that this library leaves open the choice of how data will be persisted, and therefore offers no default implementation. The examples given below are not sufficient to track a user's journey on their own, as data is only stored in memory and will be lost when the user navigates to another page. See the included example code for a simple way to persist data using the Web Storage API.
 
+## Install
+
+### server-side with npm:
+    npm install probabilitydrive
+
+### client-side with bower:
+    bower install probabilitydrive
+
+or just copy the built, or built & minified file, to your project.
+
 ## Analysis examples
 ```js
 // Create a new instance
