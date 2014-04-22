@@ -205,13 +205,15 @@ describe('probabilitydrive.js', function() {
     describe('routes()', function() {
         beforeEach(function() {
             pdInstance.routes([
-                '/product/:id'
+                '/product/:id',
+                '/account*',
+                '/product/:id/info/*'
             ]);
 
             navigatePaths('/');
         });
 
-        it('should combine parameterised URLs', function() {
+        it('should combine parameterised paths', function() {
             navigatePaths([
                 '/product/1',
                 '/',
@@ -223,6 +225,38 @@ describe('probabilitydrive.js', function() {
             var result = pdInstance.determine();
             assert.equal(result.length, 1);
             assert.equal(result[0], '/product/:id');
+        });
+
+        it.skip('should combine wildcard matched paths', function() {
+            navigatePaths([
+                '/account',
+                '/',
+                '/account/profile',
+                '/',
+                '/test',
+                '/'
+            ]);
+            var result = pdInstance.determine();
+            assert.equal(result.length, 1);
+            assert.equal(result[0], '/account*');
+        });
+
+        it.skip('should combine paramterised and wildcard matched paths', function() {
+            navigatePaths([
+                '/product/1/info/summary',
+                '/',
+                '/product/2/info',
+                '/',
+                '/product/2/info',
+                '/',
+                '/product/2/info/specs',
+                '/',
+                '/product/1/info/buying-options/delivery',
+                '/'
+            ]);
+            var result = pdInstance.determine();
+            assert.equal(result.length, 1);
+            assert.equal(result[0], '/product/:id/info/*');
         });
     });
 
