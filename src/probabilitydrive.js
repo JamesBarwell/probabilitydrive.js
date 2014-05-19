@@ -18,6 +18,8 @@
      * Observe a specified path, to track a user's journey
      *
      * @param {string} path
+     *
+     * @return ProbabilityDrive
      */
     ProbabilityDrive.prototype.observe = function(path) {
         if (path !== this.currentPath &&
@@ -113,15 +115,20 @@
      * from predictions
      *
      * @param {number} threshold
+     *
+     * @return ProbabilityDrive
      */
     ProbabilityDrive.prototype.setCountThreshold = function(threshold) {
         this.countThreshold = threshold;
+        return this;
     }
 
     /**
      * Parameterise paths so that they will be bundled together
      *
      * @param {string[]} routes
+     *
+     * @return ProbabilityDrive
      */
     ProbabilityDrive.prototype.routes = function(routes) {
         for (var i = 0; i < routes.length; i++) {
@@ -129,12 +136,15 @@
                 stripAndBreakPath(routes[i], '/')
             )
         }
+        return this;
     }
 
     /**
      * Blacklist paths so that they will never be returned in predictions
      *
      * @param {string[]} routes
+     *
+     * @return ProbabilityDrive
      */
     ProbabilityDrive.prototype.blacklist = function(routes) {
         for (var i = 0; i < routes.length; i++) {
@@ -142,6 +152,7 @@
                 stripAndBreakPath(routes[i], '/')
             )
         }
+        return this;
     }
 
     /**
@@ -160,12 +171,16 @@
      * Deserialise the observation data
      *
      * @param {string[]} data
+     *
+     * @return ProbabilityDrive
      */
     ProbabilityDrive.prototype.setData = function(data) {
         data = data || {};
 
         this.currentPath = data.currentPath;
         this.store      = data.store || {};
+
+        return this;
     }
 
     /**
