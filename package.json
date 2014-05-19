@@ -21,9 +21,11 @@
   ],
   "devDependencies": {
     "mocha": "~1.17.1",
-    "smoosh": "~0.4.1"
+    "smoosh": "~0.4.1",
+    "istanbul": "~0.2.7"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "coverage": "istanbul cover _mocha"
   }
 }
