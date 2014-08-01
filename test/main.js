@@ -11,12 +11,14 @@ describe('probabilitydrive.js', function() {
     });
 
     describe('observe()', function() {
+        var result;
+
         beforeEach(function() {
             navigatePaths('/');
+            result = pdInstance.determine();
         });
 
         it('should return [] when it has no data', function() {
-            var result = pdInstance.determine();
             assert.equal(result.length, 0);
         });
         it('should chain with other module functions', function() {
@@ -26,57 +28,83 @@ describe('probabilitydrive.js', function() {
     });
 
     describe('determine()', function() {
-        beforeEach(function() {
-            navigatePaths('/');
+
+        context('simple repeat path', function() {
+            var result;
+
+            beforeEach(function() {
+                navigatePaths([
+                    '/',
+                    '/page1',
+                    '/'
+                ]);
+                result = pdInstance.determine();
+            });
+
+            it('should predict the repeated path', function() {
+                assert.equal(result.length, 1);
+                assert.equal(result[0], '/page1');
+            });
         });
 
-        it('should predict a simple repeat path', function() {
-            navigatePaths([
-                '/page1',
-                '/'
-            ]);
-            var result = pdInstance.determine();
-            assert.equal(result.length, 1);
-            assert.equal(result[0], '/page1');
-        });
-        it('should predict multiple paths when count weightings are equal', function() {
-            navigatePaths([
-                '/page1',
-                '/',
-                '/page2',
-                '/page3',
-                '/'
-            ]);
-            var result = pdInstance.determine()
-            assert.equal(result.length, 2);
-            assert.equal(result[0], '/page1');
-            assert.equal(result[1], '/page2');
-        });
-        it('should prioritise paths that have a higher count weighting', function() {
-            navigatePaths([
-                '/page1',
-                '/',
-                '/page2',
-                '/',
-                '/page2',
-                '/',
-                '/page3',
-                '/'
-            ]);
-            var result = pdInstance.determine();
-            assert.equal(result.length, 1);
-            assert.equal(result[0], '/page2');
+        context('paths with equal weightings', function() {
+            var result;
+
+            beforeEach(function() {
+                navigatePaths([
+                    '/',
+                    '/page1',
+                    '/',
+                    '/page2',
+                    '/page3',
+                    '/'
+                ]);
+                result = pdInstance.determine()
+            });
+
+            it('should predict the most repeated multiple paths', function() {
+                assert.equal(result.length, 2);
+                assert.equal(result[0], '/page1');
+                assert.equal(result[1], '/page2');
+            });
         });
 
-        context('when given a path', function() {
-            it('should predict within that context', function() {
+        context('path with a higher count than others', function() {
+            var result;
+
+            beforeEach(function() {
+                navigatePaths([
+                    '/page1',
+                    '/',
+                    '/page2',
+                    '/',
+                    '/page2',
+                    '/',
+                    '/page3',
+                    '/'
+                ]);
+                result = pdInstance.determine();
+            });
+
+            it('should predict the most visited path', function() {
+                assert.equal(result.length, 1);
+                assert.equal(result[0], '/page2');
+            });
+        });
+
+        context('when a path is specified as context', function() {
+            var result;
+
+            beforeEach(function() {
                 navigatePaths([
                     '/step1',
                     '/step2',
                     '/'
                 ]);
+                result = pdInstance.determine('/step1');
+            });
 
-                var result = pdInstance.determine('/step1');
+            it('should predict within that context', function() {
                 assert.equal(result.length, 1);
                 assert.equal(result[0], '/step2');
             });
@@ -87,18 +115,32 @@ describe('probabilitydrive.js', function() {
                 pdInstance.setCountThreshold(3);
             });
 
-            it('should ignore URL data that has not been observed 3 times', function() {
-                navigateBackForth('/page1', '/', 2);
-                var result = pdInstance.determine();
-                assert.equal(result.length, 0);
+            context('and paths have not been observed 3 times', function() {
+                var result;
+
+                beforeEach(function() {
+                    navigateBackForth('/page1', '/', 2);
+                    result = pdInstance.determine();
+                });
+
+                it('should ignore those paths', function() {
+                    assert.equal(result.length, 0);
+                });
             });
 
-            it('should still predict URLs that have met the count threshold', function() {
-                navigateBackForth('/page1', '/', 2);
-                navigateBackForth('/page2', '/', 3);
-                var result = pdInstance.determine();
-                assert.equal(result.length, 1);
-                assert.equal(result[0], '/page2');
+            context('and paths have not been observed more than 3 times', function() {
+                var result;
+
+                beforeEach(function() {
+                    navigateBackForth('/page1', '/', 2);
+                    navigateBackForth('/page2', '/', 3);
+                    result = pdInstance.determine();
+                });
+
+                it('should ignore those paths', function() {
+                    assert.equal(result.length, 1);
+                    assert.equal(result[0], '/page2');
+                });
             });
         });
 
